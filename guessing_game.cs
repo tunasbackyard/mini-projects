@@ -5,7 +5,6 @@ namespace GuessingGame
         static void Main(string[] args)
         {
             Game.start();
-            Game.getCorrectGuesses();
             Game.printStatistics();
         }
     }
@@ -95,7 +94,7 @@ namespace GuessingGame
             }
         }
 
-        public static void getCorrectGuesses()
+        private static void getCorrectGuesses()
         {
             for (int i = 0; i < numberOfGuesses; i++)
             {
@@ -111,6 +110,7 @@ namespace GuessingGame
         }
         public static void printStatistics()
         {
+            getCorrectGuesses();
             HashSet<int> correctGuesses = new HashSet<int>();
             foreach(Ball ball in player1CorrectGuesses)
                 correctGuesses.Add(ball.number);
@@ -125,8 +125,10 @@ namespace GuessingGame
 
             Console.WriteLine($"Oyuncu 2:\n=== Doğru tahminler:{string.Join(",", correctGuesses)}\n" +
                 $"=== {correctGuesses.Count} doğru tahmin.\n\n");
+            int player2GuessCount = correctGuesses.Count;
 
-            Console.WriteLine($"\t{ checkWinner(player1GuessCount,correctGuesses.Count) }");
+
+            Console.WriteLine($"\t{ checkWinner(player1GuessCount,player2GuessCount) }");
         }
 
         private static string checkWinner(int player1GuessCount,int player2GuessCount)
