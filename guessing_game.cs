@@ -1,5 +1,3 @@
-using System;
-
 namespace GuessingGame
 {
     static class Program
@@ -7,7 +5,8 @@ namespace GuessingGame
         static void Main(string[] args)
         {
             Game.start();
-            Game.checkWinner();
+            Game.getCorrectGuesses();
+            Game.printStatistics();
         }
     }
 
@@ -48,12 +47,6 @@ namespace GuessingGame
                 balls[newIndex] = temp;
             }
         }
-
-        public static void printBag()
-        {
-            foreach(Ball ball in balls)
-                Console.Write(ball.number);
-        }
     }
 
     static class Game
@@ -62,6 +55,9 @@ namespace GuessingGame
         private static List<int> player2Inputs = new List<int>();
         private static int numberOfGuesses = 5;
         private static List<Ball> pulledBalls = new List<Ball>();
+
+        private static List<Ball> player1CorrectGuesses = new List<Ball>();
+        private static List<Ball> player2CorrectGuesses = new List<Ball>();
         public static void start()
         {
             Bag.create();
@@ -99,37 +95,44 @@ namespace GuessingGame
             }
         }
 
-        public static void checkWinner()
+        public static void getCorrectGuesses()
         {
-            HashSet<Ball> player1CorrectGuesses = new HashSet<Ball>();
-            string player1CorrectBalls = "";
-
-            HashSet<Ball> player2CorrectGuesses = new HashSet<Ball>();
-            string player2CorrectBalls = "";
-
-
             for (int i = 0; i < numberOfGuesses; i++)
             {
                 for(int j = 0; j< numberOfGuesses; j++)
                 {
-                    if(pulledBalls[i].number == player1Inputs[j]) {
+                    if(pulledBalls[i].number == player1Inputs[j]) 
                         player1CorrectGuesses.Add(pulledBalls[i]);
-                        player1CorrectBalls = player1CorrectBalls + " " +pulledBalls[i].number.ToString();
-                    }
 
                     if (pulledBalls[i].number == player2Inputs[j])
-                    {
                         player2CorrectGuesses.Add(pulledBalls[i]);
-                        player2CorrectBalls = player2CorrectBalls + " " + pulledBalls[i].number.ToString();
-                    }
                 }
             }
+        }
+        public static void printStatistics()
+        {
+            HashSet<int> correctGuesses = new HashSet<int>();
+            foreach(Ball ball in player1CorrectGuesses)
+                correctGuesses.Add(ball.number);
 
+            Console.WriteLine($"Oyuncu 1:\n=== Doğru tahminler:{string.Join(",",correctGuesses)}\n" +
+                $"=== {correctGuesses.Count} doğru tahmin.\n\n");
+            
+            int player1GuessCount = correctGuesses.Count;
+            correctGuesses.Clear();
+            foreach (Ball ball in player2CorrectGuesses)
+                correctGuesses.Add(ball.number);
 
-            Console.WriteLine(
-                $"[{( (player1CorrectGuesses.Count > player2CorrectGuesses.Count) ? "kazanan" : "kaybeden" )}] Oyuncu 1\nDoğru Tahminler{player1CorrectBalls}, {player1CorrectGuesses.Count} doğru tahmin.\n\n" +
-                $"[{((player1CorrectGuesses.Count < player2CorrectGuesses.Count) ? "kazanan" : "kaybeden")}] Oyuncu 2\nDoğru Tahminler{player2CorrectBalls}, {player2CorrectGuesses.Count} doğru tahmin.\n\n"
-                );
+            Console.WriteLine($"Oyuncu 2:\n=== Doğru tahminler:{string.Join(",", correctGuesses)}\n" +
+                $"=== {correctGuesses.Count} doğru tahmin.\n\n");
+
+            Console.WriteLine($"\t{ checkWinner(player1GuessCount,correctGuesses.Count) }");
+        }
+
+        private static string checkWinner(int player1GuessCount,int player2GuessCount)
+        {
+            if (player1GuessCount == player2GuessCount) return "berabere";
+            return (player1GuessCount > player2GuessCount) ? "oyuncu 1 kazandı" : "oyuncu 2 kazandı";
         }
     }
 
